@@ -1,6 +1,6 @@
 import { inspect } from 'util';
 
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 
 import { STATUS_CODES } from '~constants';
 import logger from '~libs/logger';
@@ -30,14 +30,14 @@ export const createError = (internalCode: string, statusCode: number): InternalE
   errorPayload?: InternalErrorPayload
 ): InternalError => {
   errorPayload?.error && logger.error(inspect(errorPayload.error));
-  return ({ errors: errorPayload?.messages || [], internalCode, statusCode });
+  return { errors: errorPayload?.messages || [], internalCode, statusCode };
 };
-  
 
 export function errorHandlerMiddleware(
   error: InternalError,
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction // eslint-disable-line @typescript-eslint/no-unused-vars
 ): Response | void {
   if (error.internalCode) {
     res.status(error.statusCode || DEFAULT_STATUS_CODE);
