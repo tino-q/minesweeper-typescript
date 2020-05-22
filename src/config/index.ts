@@ -22,6 +22,10 @@ const generateConfig = (): Config => {
       prefix: '/',
       port: Number(getEnvVar('PORT', '8080'))
     },
+    dynamodb: {
+      region: getEnvVar('DYNAMO_DB_REGION'),
+      endpoint: getEnvVar('DYNAMO_DB_ENDPOINT')
+    }
   };
   if (missingKeys.length) {
     throw new Error(`The following environment variables are missing: ${missingKeys}`);
