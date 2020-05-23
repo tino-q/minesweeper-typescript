@@ -23,8 +23,8 @@ const generateConfig = (): Config => {
       port: Number(getEnvVar('PORT', '8080'))
     },
     dynamodb: {
-      region: getEnvVar('DYNAMO_DB_REGION'),
-      endpoint: getEnvVar('DYNAMO_DB_ENDPOINT')
+      boardTableName: getEnvVar('BOARD_TABLE_NAME'),
+      boardTableRegion: getEnvVar('BOARD_TABLE_REGION'),
     }
   };
   if (missingKeys.length) {

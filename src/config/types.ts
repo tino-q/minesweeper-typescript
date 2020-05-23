@@ -5,8 +5,8 @@ interface APIConfig {
 }
 
 export interface DynamoDBConfig {
-  endpoint: string;
-  region: string;
+  boardTableRegion: string;
+  boardTableName: string;
 }
 
 export interface Config {

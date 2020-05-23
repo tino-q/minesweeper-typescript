@@ -1,0 +1,1 @@
+zip -r build.zip Dockerfile package.json src .ebextensions Dockerrun.aws.json tsconfig.build.json tsconfig.json .env
