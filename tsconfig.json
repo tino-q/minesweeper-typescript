@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     /** Basic Options **/
+    "resolveJsonModule": true,
     "allowJs": true,
     "checkJs": true,
     "declaration": true,
