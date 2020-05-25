@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import dynamoDBMocks from '~tests/mocks/dynamoDB';
 
 import request from 'supertest';
@@ -164,7 +163,6 @@ describe('POST /boards', () => {
 });
 
 describe('GET /boards/:board_id', () => {
-
   describe('with a non existent uuid v4', () => {
     let response: request.Response;
     afterAll(() => dynamoDBMocks.clearStore());
@@ -192,6 +190,22 @@ describe('GET /boards/:board_id', () => {
     });
     test('body should be the serialized board', () => {
       expect(testSerializedBoard(board)).toBeTruthy();
+    });
+  });
+
+  describe('requesting a finished board', () => {
+    let response: request.Response;
+    afterAll(() => dynamoDBMocks.clearStore());
+    beforeAll(async (done: jest.DoneCallback) => {
+      const minePosition: Position = {x: 0, y: 0};
+      const mines: Record<string, true | undefined> = {[serializePosition(minePosition)]: true};
+      const { id } = await repositories.boards.saveBoard(getTestBoard(mines));
+      await services.boards.revealPosition({ position: minePosition, boardId: id });
+      response = await request(app).get(`/boards/${id}`);
+      return done();
+    });
+    test(`status code should be ${STATUS_CODES.NOT_FOUND}`, () => {
+      expect(response.status).toBe(STATUS_CODES.NOT_FOUND);
     });
   });
 });

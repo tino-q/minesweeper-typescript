@@ -12,10 +12,10 @@ import { Hint } from '~api/models/hint';
 export const getBoardById = async (id: string): Promise<Board> => {
   logger.info(`Searching board by id: ${id}`);
   const board: Board | null = await repositories.boards.findBoardById(id);
-  if (!board) {
+  if (!board || board.explosionPos) {
     throw boardNotFoundError();
   }
-  logger.info(`Found board ${inspect(board.id)}\n\n`);
+  logger.info(`Found board ${inspect(board.id)}`);
   return board;
 };
 
@@ -37,7 +37,7 @@ export const boardOver = async (board: Board, explosionPos: Position): Promise<B
   return updatedBoard;
 };
 
-const getNeighbours = (position: Position): Position[] => [
+export const getNeighbours = (position: Position): Position[] => [
   { x: position.x - 1, y: position.y },
   { x: position.x + 1, y: position.y },
   { x: position.x, y: position.y - 1 },
@@ -101,7 +101,7 @@ export const toggleFlag = async (params: BoardPositionParams): Promise<Board> =>
     [pos]: board.flags[pos] ? undefined : true,
   };
   const updatedBoard: Board = await repositories.boards.saveBoard(board);
-  logger.info(`Flag toggled ${inspect(updatedBoard.id)}\n\n`);
+  logger.info(`Flag toggled ${inspect(updatedBoard.id)}`);
   return updatedBoard;
 };
 
@@ -125,7 +125,7 @@ export const revealPosition = async (params: BoardPositionParams): Promise<Board
   }
   board.hints = { ...board.hints, ...calculateNewHints(board, params.position) };
   const updatedBoard: Board = await repositories.boards.saveBoard(board);
-  logger.info(`Reveal position updated board ${inspect(updatedBoard.id)}\n\n`);
+  logger.info(`Reveal position updated board ${inspect(updatedBoard.id)}`);
   return updatedBoard;
 };
 
@@ -157,6 +157,6 @@ export const toggleQuestionMark = async (params: BoardPositionParams): Promise<B
     [pos]: board.questionMarks[pos] ? undefined : true,
   };
   const updatedBoard: Board = await repositories.boards.saveBoard(board);
-  logger.info(`Question mark toggled ${inspect(updatedBoard.id)}\n\n`);
+  logger.info(`Question mark toggled ${inspect(updatedBoard.id)}`);
   return updatedBoard;
 };
