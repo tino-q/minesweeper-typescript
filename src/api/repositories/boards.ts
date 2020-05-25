@@ -2,6 +2,7 @@ import { Board, isBoard } from '~api/models/board';
 import services from '~api/services';
 import logger from '~libs/logger';
 import { serviceUnavailableError, invalidBoardError } from '~api/errors';
+import { DEFAULT_BOARD_TTL_SECONDS } from '~constants';
 
 export const findBoardById = async (id: string): Promise<Board | null | never> => {
   let board;
@@ -20,10 +21,10 @@ export const findBoardById = async (id: string): Promise<Board | null | never> =
   throw invalidBoardError();
 };
 
-export const saveBoard = async (board: Board): Promise<Board> => {
+export const saveBoard = async (board: Board, secondsToLive: number = DEFAULT_BOARD_TTL_SECONDS): Promise<Board> => {
   let savedBoard: Board | null;
   try {
-    savedBoard = await services.dynamodb.putGetValue(board.id, board);
+    savedBoard = await services.dynamodb.putGetValue(board.id, board, secondsToLive);
   } catch (err) {
     logger.error(`Fail dynamodb putGetValue: ${board.id}`);
     throw serviceUnavailableError({ error: err });

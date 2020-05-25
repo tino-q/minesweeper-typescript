@@ -21,15 +21,16 @@ export async function getValue<T>(key: string): Promise<T | null> {
   return result.Item as T;
 }
 
-export async function putValue<T>(key: string, object: T): Promise<void> {
+async function putValue<T>(key: string, object: T, secondsToLive: number): Promise<void> {
   logger.info(`Start to set value in table: "${table}" with key: "${key}"`);
-  await dynamoClient.put({ TableName: table, Item: { id: key, ...object } }).promise();
+  const ttl = Date.now() + (secondsToLive * 1000);
+  await dynamoClient.put({ TableName: table, Item: { id: key, ...object, ttl } }).promise();
   logger.info(`Finish to set value in table: "${table}" with key: "${key}"`);
 }
 
 
-export async function putGetValue<T>(key: string, object: T): Promise<T | null> {
-  await putValue(key, object);
+export async function putGetValue<T>(key: string, object: T, secondsToLive: number): Promise<T | null> {
+  await putValue(key, object, secondsToLive);
   return getValue(key);
 }
 

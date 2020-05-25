@@ -8,6 +8,7 @@ import repositories from '~api/repositories';
 import { boardNotFoundError, positionHasHintError, invalidPositionForBoard, tagAlreadyExistsError } from '~api/errors';
 import { serializePosition, SerializedPosition } from '~api/serializers/position';
 import { Hint } from '~api/models/hint';
+import { SAVED_BOARD_TTL_SECONDS } from '~constants';
 
 export const getBoardById = async (id: string): Promise<Board> => {
   logger.info(`Searching board by id: ${id}`);
@@ -137,7 +138,7 @@ export const saveBoardBytag = async (boardId: string, boardTag: string): Promise
     throw tagAlreadyExistsError();
   }
   board.id = boardTag;
-  return repositories.boards.saveBoard(board);
+  return repositories.boards.saveBoard(board, SAVED_BOARD_TTL_SECONDS);
 };
 
 
