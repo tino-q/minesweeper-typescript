@@ -10,6 +10,8 @@ SSL is certified by LetsEncrypt :)
 
 Check the swagger docs [here](https://msfttt-env.eba-32y2i3df.us-east-1.elasticbeanstalk.com/swagger "Swagger")
 
+You can play the game clicking [here](https://master.d1eyn4tierp0rk.amplifyapp.com/)
+
 ## Installation and execution
 
 `npm install` is enough to run the tests (`npm test`).
