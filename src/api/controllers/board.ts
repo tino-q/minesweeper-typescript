@@ -45,3 +45,32 @@ export async function revealPosition(
     return next(err);
   }
 }
+
+export async function saveBoardByTag(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response | void> {
+  try {
+    await services.boards.saveBoardBytag(req.params.board_id, req.params.board_tag);
+    return res.status(STATUS_CODES.CREATED).end();
+  } catch (err) {
+    return next(err);
+  }
+}
+
+
+export async function toggleQuestion(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response | void> {
+  try {
+    const board: Board = await services.boards.toggleQuestionMark(mapBoardPositionParams(req));
+    return res.status(STATUS_CODES.OK).send(serializeBoard(board));
+  } catch (err) {
+    return next(err);
+  }
+}
+
+

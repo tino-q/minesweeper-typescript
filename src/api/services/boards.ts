@@ -5,7 +5,7 @@ import { Position } from '~api/models/position';
 import logger from '~libs/logger';
 import { CreateBoardParams, BoardPositionParams } from '~api/mappers/boards';
 import repositories from '~api/repositories';
-import { boardNotFoundError, positionHasHintError, invalidPositionForBoard } from '~api/errors';
+import { boardNotFoundError, positionHasHintError, invalidPositionForBoard, tagAlreadyExistsError } from '~api/errors';
 import { serializePosition, SerializedPosition } from '~api/serializers/position';
 import { Hint } from '~api/models/hint';
 
@@ -15,15 +15,16 @@ export const getBoardById = async (id: string): Promise<Board> => {
   if (!board) {
     throw boardNotFoundError();
   }
-  logger.info(`Found board ${inspect(board)}`);
+  logger.info(`Found board ${inspect(board.id)}\n\n`);
   return board;
 };
 
 export const createBoard = async (params: CreateBoardParams): Promise<Board> => {
   logger.info(`Creating board ${inspect(params)}`);
-  const boardDraft: Board = buildBoard(params.rows, params.columns);
+  const boardDraft: Board = buildBoard(params);
+  logger.info(`built board ${inspect(boardDraft)}`);
   const board: Board = await repositories.boards.saveBoard(boardDraft);
-  logger.info(`Created board ${inspect(board)}`);
+  logger.info(`Created board ${inspect(board.id)}`);
   return board;
 };
 
@@ -32,7 +33,7 @@ export const boardOver = async (board: Board, explosionPos: Position): Promise<B
     ...board,
     explosionPos
   });
-  logger.info(`Board over ${inspect(updatedBoard)}`);
+  logger.info(`Board over ${inspect(updatedBoard.id)}`);
   return updatedBoard;
 };
 
@@ -95,16 +96,27 @@ export const toggleFlag = async (params: BoardPositionParams): Promise<Board> =>
   if (board.hints[pos]) {
     throw positionHasHintError();
   }
-  board.flags[pos] = board.flags[pos] ? undefined : true;
+  board.flags = {
+    ...board.flags,
+    [pos]: board.flags[pos] ? undefined : true,
+  };
   const updatedBoard: Board = await repositories.boards.saveBoard(board);
-  logger.info(`Flag toggled ${inspect(updatedBoard)}`);
+  logger.info(`Flag toggled ${inspect(updatedBoard.id)}\n\n`);
   return updatedBoard;
 };
 
 export const revealPosition = async (params: BoardPositionParams): Promise<Board> => {
-  logger.info(`Putting flag ${inspect(params)}`);
+  logger.info(`Revealing position ${inspect(params)}`);
   const board: Board = await findAndValidateBoardPosition(params);
   const pos = serializePosition(params.position);
+  board.flags = {
+    ...board.flags,
+    [pos]: undefined,
+  };
+  board.questionMarks = {
+    ...board.questionMarks,
+    [pos]: undefined,
+  };
   if (board.mines[pos]) {
     return boardOver(board, params.position);
   }
@@ -113,6 +125,38 @@ export const revealPosition = async (params: BoardPositionParams): Promise<Board
   }
   board.hints = { ...board.hints, ...calculateNewHints(board, params.position) };
   const updatedBoard: Board = await repositories.boards.saveBoard(board);
-  logger.info(`Flag put ${inspect(updatedBoard)}`);
+  logger.info(`Reveal position updated board ${inspect(updatedBoard.id)}\n\n`);
+  return updatedBoard;
+};
+
+
+export const saveBoardBytag = async (boardId: string, boardTag: string): Promise<Board> => {
+  const board: Board = await getBoardById(boardId);
+  const conflictingBoard: Board | null = await repositories.boards.findBoardById(boardTag);
+  if (conflictingBoard) {
+    throw tagAlreadyExistsError();
+  }
+  board.id = boardTag;
+  return repositories.boards.saveBoard(board);
+};
+
+
+export const toggleQuestionMark = async (params: BoardPositionParams): Promise<Board> => {
+  logger.info(`Toggling question mark ${inspect(params)}`);
+  const board = await findAndValidateBoardPosition(params);
+  const pos = serializePosition(params.position);
+  if (board.hints[pos]) {
+    throw positionHasHintError();
+  }
+  board.flags = {
+    ...board.flags,
+    [pos]: undefined
+  };
+  board.questionMarks = {
+    ...board.questionMarks,
+    [pos]: board.questionMarks[pos] ? undefined : true,
+  };
+  const updatedBoard: Board = await repositories.boards.saveBoard(board);
+  logger.info(`Question mark toggled ${inspect(updatedBoard.id)}\n\n`);
   return updatedBoard;
 };

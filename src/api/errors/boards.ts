@@ -12,3 +12,6 @@ export const positionHasHintError = createError(POSITION_HAS_HINT_ERROR, STATUS_
 
 export const INVALID_POSITION_FOR_BOARD = 'invalid_position_for_board';
 export const invalidPositionForBoard = createError(INVALID_POSITION_FOR_BOARD, STATUS_CODES.BAD_REQUEST);
+
+export const TAG_ALREADY_EXISTS_ERROR = 'tag_already_exists_error';
+export const tagAlreadyExistsError = createError(TAG_ALREADY_EXISTS_ERROR, STATUS_CODES.BAD_REQUEST);

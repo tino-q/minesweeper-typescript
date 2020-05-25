@@ -7,7 +7,9 @@ export const getBoardSchema = {
     type: 'object',
     required: ['board_id'],
     properties: {
-      board_id: uuid
+      board_id: {
+        type: 'string',
+      }
     }
   }
 };
@@ -32,7 +34,13 @@ export const createBoardSchema = {
     required: [],
     properties: {
       rows: ROW,
-      columns: COLUMN
+      columns: COLUMN,
+      difficulty: {
+        type: 'number',
+        example: 5,
+        min: 1,
+        max: 100
+      }
     }
   }
 };
@@ -42,7 +50,7 @@ export const boardPositionSchema = {
     type: 'object',
     required: ['board_id'],
     properties: {
-      board_id: uuid
+      board_id: { type: 'string' }
     }
   },
   body: {
@@ -55,6 +63,15 @@ export const boardPositionSchema = {
   }
 };
 
-export const revealPositionSchema = boardPositionSchema;
-
-export const toggleFlagSchema = boardPositionSchema;
+export const saveBoardByTagSchema = {
+  params: {
+    type: 'object',
+    required: ['board_id', 'board_tag'],
+    properties: {
+      board_id: uuid,
+      board_tag: {
+        type: 'string'
+      }
+    }
+  },
+};

@@ -9,10 +9,4 @@ const stubLogger = {
   warn: (): void => {}
 };
 
-const customLogger = {
-  info: (i: any): void => console.log(JSON.stringify(i, null, 2)),
-  error: (i: any): void => console.error(JSON.stringify(i, null, 2)),
-  warn: (i: any): void => console.warn(JSON.stringify(i, null, 2)),
-};
-
-export default config.environment === ENVIRONMENTS.TESTING ? stubLogger : customLogger;
+export default config.environment === ENVIRONMENTS.TESTING ? stubLogger : console;

@@ -23,6 +23,7 @@ const generateConfig = (): Config => {
       port: Number(getEnvVar('PORT', '8080'))
     },
     dynamodb: {
+      boardTableEndpoint: getEnvVar('BOARD_TABLE_ENDPOINT', ''),
       boardTableName: getEnvVar('BOARD_TABLE_NAME'),
       boardTableRegion: getEnvVar('BOARD_TABLE_REGION'),
     }

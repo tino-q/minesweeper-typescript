@@ -5,10 +5,11 @@ import {
   boardNotFoundError,
   positionHasHintError,
   invalidPositionForBoard,
-  invalidBoardError
+  invalidBoardError,
+  tagAlreadyExistsError
 } from '~api/errors';
 import { STATUS_CODES } from '~constants';
-import { createBoardSchema, toggleFlagSchema } from '~api/schemas';
+import { createBoardSchema, boardPositionSchema } from '~api/schemas';
 
 export default {
   '/boards': {
@@ -30,14 +31,14 @@ export default {
       }
     }
   },
-  '/boards/:board_id': {
+  '/boards/:board_tag': {
     get: {
       tags: [Tags.BOARDS],
-      description: 'Gets an existing board!',
-      operationId: 'getBoard',
+      description: 'Gets a saved board!',
+      operationId: 'getSavedBoard',
       responses: {
         [STATUS_CODES.OK]: {
-          description: 'The board',
+          description: 'The saved board',
           content: {
             'application/json': {
               schema: { $ref: '#/components/schemas/Board' }
@@ -48,12 +49,71 @@ export default {
       }
     }
   },
+  '/boards/:board_id/save/:board_tag': {
+    get: {
+      tags: [Tags.BOARDS],
+      description: 'Saves a board by a tag!',
+      operationId: 'saveBoardByTag',
+      responses: {
+        [STATUS_CODES.CREATED]: { description: "Board saved ok" },
+        ...generateErrorResponses(tagAlreadyExistsError(), boardNotFoundError(), invalidBoardError())
+      }
+    }
+  },
   '/boards/:board_id/toggle_flag': {
     put: {
       tags: [Tags.BOARDS],
       description: 'Toggles a flag on a position',
       operationId: 'toggleFLag',
-      parameters: getSwaggerParameters(toggleFlagSchema),
+      parameters: getSwaggerParameters(boardPositionSchema),
+      responses: {
+        [STATUS_CODES.OK]: {
+          description: 'The updated board',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/Board' }
+            }
+          }
+        },
+        ...generateErrorResponses(
+          boardNotFoundError(),
+          invalidBoardError(),
+          positionHasHintError(),
+          invalidPositionForBoard()
+        )
+      }
+    }
+  },
+  '/boards/:board_id/reveal': {
+    put: {
+      tags: [Tags.BOARDS],
+      description: 'Reveals a position',
+      operationId: 'revealPosition',
+      parameters: getSwaggerParameters(boardPositionSchema),
+      responses: {
+        [STATUS_CODES.OK]: {
+          description: 'The updated board',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/Board' }
+            }
+          }
+        },
+        ...generateErrorResponses(
+          boardNotFoundError(),
+          invalidBoardError(),
+          positionHasHintError(),
+          invalidPositionForBoard()
+        )
+      }
+    }
+  },
+  '/boards/:board_id/toggle_question': {
+    put: {
+      tags: [Tags.BOARDS],
+      description: 'Toggles a question mark on a position',
+      operationId: 'toggleQuestion',
+      parameters: getSwaggerParameters(boardPositionSchema),
       responses: {
         [STATUS_CODES.OK]: {
           description: 'The updated board',
