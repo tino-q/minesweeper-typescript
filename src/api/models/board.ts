@@ -3,7 +3,7 @@ import { v4 } from 'uuid';
 
 import { getRandomPosition } from './position';
 
-import { BOARD_MAX_ROWS, BOARD_MAX_COLUMNS } from '~constants/boards';
+import { BOARD_MAX_ROWS, BOARD_MAX_COLUMNS, BOARD_DEFAULT_DIFFICULTY } from '~constants/boards';
 import { isSerializedPosition, serializePosition, SerializedPosition } from '~api/serializers/position';
 import { Hint, isHint } from '~api/models/hint';
 import { Position } from '~api/models/position';
@@ -48,7 +48,7 @@ export function isBoard(board: unknown): board is Board {
 const range = (i: number): number[] => [...Array(i).keys()];
 
 const buildMines = (params: CreateBoardParams): Record<SerializedPosition, true | undefined> =>
-  range(Math.floor(params.difficulty / 100 * params.rows * params.columns)).reduce(
+  range(Math.floor((params.difficulty || BOARD_DEFAULT_DIFFICULTY) / 100 * params.rows * params.columns)).reduce(
     (acum: Record<SerializedPosition, true | undefined>) => {
       let inserted = false;
       while (!inserted) {
@@ -71,7 +71,7 @@ export const buildBoard = (
   id: v4(),
   rows: params.rows,
   columns: params.columns,
-  difficulty: params.difficulty,
+  difficulty: params.difficulty || BOARD_DEFAULT_DIFFICULTY,
   flags: {},
   mines,
   hints: {},

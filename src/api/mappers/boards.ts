@@ -12,7 +12,7 @@ import {
 export interface CreateBoardParams {
   rows: number;
   columns: number;
-  difficulty: number;
+  difficulty?: number;
 }
 
 export const mapCreateBoardParams = (req: Request): CreateBoardParams => {
