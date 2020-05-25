@@ -16,6 +16,7 @@ export interface SerializedBoard {
   hints: Record<SerializedPosition, SerializedHint>;
   begin_epoch_ms: number;
   explosion_position?: SerializedPosition;
+  won: boolean;
 }
 
 export function serializeBoard(board: Board): SerializedBoard {
@@ -29,6 +30,7 @@ export function serializeBoard(board: Board): SerializedBoard {
     hints: mapValues(board.hints, serializeHint),
     mines: board.explosionPos && board.mines,
     explosion_position: board.explosionPos && serializePosition(board.explosionPos),
-    begin_epoch_ms: board.begin_epoch_ms
+    begin_epoch_ms: board.begin_epoch_ms,
+    won: board.won
   };
 }

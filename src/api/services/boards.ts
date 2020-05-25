@@ -1,4 +1,5 @@
 import { inspect } from 'util';
+import { every, compact } from 'lodash';
 
 import { Board, buildBoard } from '~api/models/board';
 import { Position } from '~api/models/position';
@@ -36,6 +37,15 @@ export const boardOver = async (board: Board, explosionPos: Position): Promise<B
   });
   logger.info(`Board over ${inspect(updatedBoard.id)}`);
   return updatedBoard;
+};
+
+export const checkIfGameWon = (board: Board): boolean => {
+  const amountMines = compact(Object.values(board.mines)).length;
+  const amountHints = compact(Object.values(board.hints)).length;
+  const amountFlags = compact(Object.values(board.flags)).length;
+  return amountMines === amountFlags &&
+    every(Object.keys(board.mines), (pos: SerializedPosition) => board.flags[pos]) &&
+    board.rows * board.columns - amountHints === amountMines;
 };
 
 export const getNeighbours = (position: Position): Position[] => [
@@ -101,6 +111,7 @@ export const toggleFlag = async (params: BoardPositionParams): Promise<Board> =>
     ...board.flags,
     [pos]: board.flags[pos] ? undefined : true,
   };
+  board.won = checkIfGameWon(board);
   const updatedBoard: Board = await repositories.boards.saveBoard(board);
   logger.info(`Flag toggled ${inspect(updatedBoard.id)}`);
   return updatedBoard;
@@ -124,6 +135,7 @@ export const revealPosition = async (params: BoardPositionParams): Promise<Board
   if (board.hints[pos]) {
     throw positionHasHintError();
   }
+  board.won = checkIfGameWon(board);
   board.hints = { ...board.hints, ...calculateNewHints(board, params.position) };
   const updatedBoard: Board = await repositories.boards.saveBoard(board);
   logger.info(`Reveal position updated board ${inspect(updatedBoard.id)}`);

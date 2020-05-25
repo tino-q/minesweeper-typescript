@@ -181,3 +181,25 @@ describe('flags should replace question marks and vice versa', () => {
     done();
   });
 });
+
+describe('winning the game', () => {
+  let updatedBoard: Board | null;
+  const topLeftPosition: Position = { x: 0, y: 0 };
+  const mines: Record<SerializedPosition, true | undefined> = {
+    [serializePosition(topLeftPosition)]: true,
+  };
+  const rows = 5;
+  const columns = 5;
+  const boardDraft: Board = buildBoard({ rows, columns, difficulty: 1 }, mines);
+  afterAll(() => dynamoDBMocks.clearStore());
+  beforeAll(async (done: jest.DoneCallback) => {
+    const { id } = await repositories.boards.saveBoard(boardDraft);
+    await services.boards.revealPosition({position: {x: columns - 1, y: rows - 1}, boardId: id});
+    updatedBoard = await services.boards.toggleFlag({position: topLeftPosition, boardId: id});
+    return done();
+  });
+  test('board.won should be true', (done: jest.DoneCallback) => {
+    expect(updatedBoard?.won).toBeTruthy();
+    done();
+  });
+});

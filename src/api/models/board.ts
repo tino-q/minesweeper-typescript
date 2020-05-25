@@ -15,6 +15,7 @@ export interface Board {
   columns: number;
   difficulty: number;
   begin_epoch_ms: number;
+  won: boolean;
   flags: Record<SerializedPosition, true | undefined>;
   questionMarks: Record<SerializedPosition, true | undefined>;
   mines: Record<SerializedPosition, true | undefined>;
@@ -76,5 +77,6 @@ export const buildBoard = (
   mines,
   hints: {},
   questionMarks: {},
-  begin_epoch_ms: Date.now()
+  begin_epoch_ms: Date.now(),
+  won: false,
 });

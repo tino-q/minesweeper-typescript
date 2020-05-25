@@ -8,6 +8,7 @@ import { SerializedHint } from '~api/serializers/hint';
 export function testSerializedBoard(arg: unknown): arg is SerializedBoard {
   const board = arg as SerializedBoard;
   expect(board && board.id && board.id.length).toBeTruthy();
+  expect(board.won).toBeDefined();
   expect(board.rows).toBeDefined();
   expect(board.rows).toBeGreaterThanOrEqual(0);
   expect(board.columns).toBeDefined();

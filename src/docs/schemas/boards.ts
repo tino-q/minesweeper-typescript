@@ -55,6 +55,11 @@ export default {
         description: "Object where the keys are the serialized positions of the hints",
         type: 'object',
         example: { '0.0': { value: 10 } }
+      },
+      won: {
+        description: "Tells you if you won the game",
+        type: 'boolean',
+        example: false
       }
     }
   }
