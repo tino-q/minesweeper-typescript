@@ -4,7 +4,7 @@ import logger from '~libs/logger';
 import config from '~config';
 
 const awsCfg = {
-  endpoint: config.dynamodb.boardTableEndpoint,
+  endpoint: config.dynamodb.boardTableEndpoint || undefined,
   region: config.dynamodb.boardTableRegion,
 };
 

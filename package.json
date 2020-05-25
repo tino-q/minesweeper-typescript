@@ -19,7 +19,6 @@
     "lint-diff": "git diff --diff-filter=ACM --name-only --cached --relative | grep \\\\.ts$ | xargs eslint",
     "lint-fix": "npm run lint -- --fix",
     "outdated": "npm outdated --depth 0",
-    "postinstall": "npm run build",
     "pretest": "npm run lint",
     "start": "npm run build && node dist/server.js",
     "test": "NODE_ENV=test jest --forceExit --detectOpenHandles --verbose --runInBand"
