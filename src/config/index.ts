@@ -18,14 +18,14 @@ const generateConfig = (): Config => {
   const config: Config = {
     environment,
     api: {
-      baseUrl: getEnvVar('API_BASE_URL'),
+      baseUrl: getEnvVar('API_BASE_URL', 'http://localhost:8080'),
       prefix: '/',
       port: Number(getEnvVar('PORT', '8080'))
     },
     dynamodb: {
       boardTableEndpoint: getEnvVar('BOARD_TABLE_ENDPOINT', ''),
-      boardTableName: getEnvVar('BOARD_TABLE_NAME'),
-      boardTableRegion: getEnvVar('BOARD_TABLE_REGION'),
+      boardTableName: getEnvVar('BOARD_TABLE_NAME', 'boards'),
+      boardTableRegion: getEnvVar('BOARD_TABLE_REGION', 'us-east-1'),
     }
   };
   if (missingKeys.length) {
