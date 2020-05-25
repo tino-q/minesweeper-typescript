@@ -1,1 +1,1 @@
-export const BOARDS = 'BOARDS';
+export const BOARDS = 'Boards';

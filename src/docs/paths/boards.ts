@@ -9,7 +9,7 @@ import {
   tagAlreadyExistsError
 } from '~api/errors';
 import { STATUS_CODES } from '~constants';
-import { createBoardSchema, boardPositionSchema } from '~api/schemas';
+import { createBoardSchema, boardPositionSchema, getBoardSchema, saveBoardByTagSchema } from '~api/schemas';
 
 export default {
   '/boards': {
@@ -36,6 +36,7 @@ export default {
       tags: [Tags.BOARDS],
       description: 'Gets a saved board!',
       operationId: 'getSavedBoard',
+      parameters: getSwaggerParameters(getBoardSchema),
       responses: {
         [STATUS_CODES.OK]: {
           description: 'The saved board',
@@ -50,10 +51,11 @@ export default {
     }
   },
   '/boards/:board_id/save/:board_tag': {
-    get: {
+    put: {
       tags: [Tags.BOARDS],
       description: 'Saves a board by a tag!',
       operationId: 'saveBoardByTag',
+      parameters: getSwaggerParameters(saveBoardByTagSchema),
       responses: {
         [STATUS_CODES.CREATED]: { description: "Board saved ok" },
         ...generateErrorResponses(tagAlreadyExistsError(), boardNotFoundError(), invalidBoardError())
